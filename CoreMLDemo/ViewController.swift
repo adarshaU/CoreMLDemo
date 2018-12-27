@@ -61,7 +61,15 @@ extension ViewController{
             guard let result = request.results as? [VNClassificationObservation] else{
                 fatalError("classification type cast errot")
             }
-            print(result)
+        if let firstResult = result.first{
+            
+            if firstResult.identifier.contains("hotdog"){
+                self.navigationItem.title = "Hot Dog"
+            }else{
+                self.navigationItem.title = "Not Hot Dog"
+            }
+            
+        }
         }
         
         let hadler = VNImageRequestHandler(ciImage:image)
