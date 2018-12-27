@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreML
+import Vision
 
 class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
 
@@ -37,9 +39,37 @@ extension ViewController{
             
             mlImageView.image = image
             
+            guard let ciimage = CIImage(image: image) else{
+                fatalError("Unaable to convert to ciimage")
+            }
+            self.detect(image: ciimage)
+            
         }
         self.dismiss(animated: true, completion: nil)
         
+    }
+    
+    
+    func detect(image:CIImage){
+        
+        guard let model = try? VNCoreMLModel(for: Inceptionv3().model) else{
+            fatalError("Unable to initialize model")
+        }
+        
+       let request = VNCoreMLRequest(model: model) { (request, error) in
+            
+            guard let result = request.results as? [VNClassificationObservation] else{
+                fatalError("classification type cast errot")
+            }
+            print(result)
+        }
+        
+        let hadler = VNImageRequestHandler(ciImage:image)
+        do{
+           try hadler.perform([request])
+        }catch{
+            fatalError("Didin't get ant resonse")
+        }
     }
     
 }
